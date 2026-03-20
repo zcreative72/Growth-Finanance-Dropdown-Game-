@@ -87,6 +87,7 @@
                 cats.forEach(c => {
                     const d = document.createElement('div');
                     d.className = 'p-4 border-b border-gray-100 hover:bg-blue-50 cursor-pointer';
+                    // FIXED: Using local relative paths
                     d.innerHTML = `<p class="font-bold text-xs uppercase mb-1">${c.txt}</p><img src="${encodeURIComponent(c.img)}" class="w-full h-auto">`;
                     d.onclick = () => {
                         document.getElementById('selected-option-text').innerText = c.txt;
@@ -100,7 +101,10 @@
 
             function render(i) {
                 const d = document.getElementById('image-display');
-                d.innerHTML = `<img src="./${encodeURIComponent(shuffled[i].src)}">`;
+                // FIXED: Using local relative paths
+                const imgName = shuffled[i].src;
+                d.innerHTML = `<img src="${encodeURIComponent(imgName)}" alt="Financial Graph">`;
+                
                 d.classList.remove('correct-answer', 'incorrect-answer');
                 document.getElementById('correct-answer-display').innerText = '';
                 document.getElementById('round-counter').innerText = `Item ${i + 1}/16`;
@@ -152,7 +156,8 @@
                 }
             }
             document.getElementById('next-item-btn').onclick = next;
-            buildMenu(); render(0);
+            buildMenu(); 
+            render(0);
         });
     </script>
 </body>
