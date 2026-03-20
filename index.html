@@ -29,8 +29,7 @@
                 <p>Plays: <span id="plays-display">0</span></p>
             </div>
         </div>
-        <div id="image-display" class="bg-gray-50 rounded-xl p-2 flex items-center justify-center border-2 border-dashed border-gray-200 min-h-[140px]">
-            </div>
+        <div id="image-display" class="bg-gray-50 rounded-xl p-2 flex items-center justify-center border-2 border-dashed border-gray-200 min-h-[140px]"></div>
     </div>
 
     <div id="scrollable-content">
@@ -101,4 +100,60 @@
 
             function render(i) {
                 const d = document.getElementById('image-display');
-                // Use a relative path to ensure GitHub Pages finds
+                d.innerHTML = `<img src="./${encodeURIComponent(shuffled[i].src)}">`;
+                d.classList.remove('correct-answer', 'incorrect-answer');
+                document.getElementById('correct-answer-display').innerText = '';
+                document.getElementById('round-counter').innerText = `Item ${i + 1}/16`;
+                document.getElementById('selected-option-text').innerText = 'Select a model...';
+                sel = null;
+                document.getElementById('custom-select-button').disabled = false;
+                document.getElementById('check-answer-btn').classList.remove('hidden');
+                document.getElementById('next-item-btn').classList.add('hidden');
+            }
+
+            document.getElementById('custom-select-button').onclick = (e) => {
+                e.stopPropagation();
+                document.getElementById('custom-select-options').classList.toggle('hidden');
+            };
+
+            window.onclick = () => document.getElementById('custom-select-options').classList.add('hidden');
+
+            document.getElementById('check-answer-btn').onclick = () => {
+                if (!sel) return alert("Select a model!");
+                if (Tone.context.state !== 'running') Tone.start();
+                tried++;
+                const isRight = sel === shuffled[idx].cat;
+                document.getElementById('custom-select-button').disabled = true;
+                document.getElementById('check-answer-btn').classList.add('hidden');
+                
+                if (isRight) {
+                    score++;
+                    document.getElementById('image-display').classList.add('correct-answer');
+                    correctSnd.triggerAttackRelease(["C4", "E4", "G4"], "0.5");
+                    setTimeout(next, 1500);
+                } else {
+                    document.getElementById('image-display').classList.add('incorrect-answer');
+                    wrongSnd.triggerAttackRelease("G2", "0.3");
+                    document.getElementById('correct-answer-display').innerText = `Correct: ${cats.find(c => c.val === shuffled[idx].cat).txt}`;
+                    document.getElementById('next-item-btn').classList.remove('hidden');
+                }
+                document.getElementById('score-display').innerText = `Score: ${score} / ${tried}`;
+            };
+
+            function next() {
+                idx++;
+                if (idx < shuffled.length) render(idx);
+                else {
+                    plays++; 
+                    localStorage.setItem('sortingGamePlays', plays);
+                    document.getElementById('plays-display').innerText = plays;
+                    document.getElementById('final-score-message').innerText = `Accuracy: ${Math.round((score/tried)*100)}%`;
+                    document.getElementById('success-modal').classList.remove('hidden');
+                }
+            }
+            document.getElementById('next-item-btn').onclick = next;
+            buildMenu(); render(0);
+        });
+    </script>
+</body>
+</html>
