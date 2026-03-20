@@ -8,13 +8,55 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        #fixed-top-section { flex-shrink: 0; background: white; border-bottom: 2px solid #e5e7eb; z-index: 50; padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        #scrollable-content { flex-grow: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; background-color: #f9fafb; }
-        #image-display img { max-width: 100%; height: auto; max-height: 180px; display: block; border-radius: 8px; }
-        @keyframes correct-animation { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; 
+        }
+
+        #fixed-top-section {
+            flex-shrink: 0;
+            background: white;
+            border-bottom: 2px solid #e5e7eb;
+            z-index: 50;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        #scrollable-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 16px;
+            background-color: #f9fafb;
+        }
+
+        #image-display img {
+            max-width: 100%;
+            height: auto;
+            max-height: 180px;
+            display: block;
+            border-radius: 8px;
+        }
+
+        @keyframes correct-animation {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
         .correct-answer { animation: correct-animation 1s ease-out; border-color: #22c55e; border-width: 4px; }
-        @keyframes incorrect-animation { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+        
+        @keyframes incorrect-animation {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
         .incorrect-answer { animation: incorrect-animation 0.4s linear; border-color: #ef4444; border-width: 4px; }
     </style>
 </head>
@@ -29,23 +71,30 @@
                 <p>Plays: <span id="plays-display">0</span></p>
             </div>
         </div>
-        <div id="image-display" class="bg-gray-50 rounded-xl p-2 flex items-center justify-center border-2 border-dashed border-gray-200 min-h-[140px]"></div>
+        
+        <div id="image-display" class="bg-gray-50 rounded-xl p-2 flex items-center justify-center border-2 border-dashed border-gray-200 min-h-[140px]">
+            </div>
     </div>
 
     <div id="scrollable-content">
         <div id="correct-answer-display" class="text-center text-red-600 font-bold min-h-[1.5rem] mb-2 text-sm italic"></div>
+
         <div id="controls" class="space-y-4 max-w-sm mx-auto">
             <div class="relative" id="custom-select-container">
-                <button id="custom-select-button" class="w-full p-4 flex items-center justify-between bg-white border-2 border-gray-300 rounded-xl shadow-sm">
+                <button id="custom-select-button" type="button" class="w-full p-4 flex items-center justify-between bg-white border-2 border-gray-300 rounded-xl shadow-sm active:bg-gray-100 transition-colors">
                     <span id="selected-option-text" class="font-semibold text-gray-700">Select a model...</span>
                     <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
                 </button>
-                <div id="custom-select-options" class="w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-lg hidden"></div>
+                
+                <div id="custom-select-options" class="w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-lg hidden">
+                    </div>
             </div>
-            <button id="check-answer-btn" class="w-full py-4 bg-blue-600 text-white font-black text-lg rounded-xl shadow-lg">CHECK ANSWER</button>
+            
+            <button id="check-answer-btn" class="w-full py-4 bg-blue-600 text-white font-black text-lg rounded-xl shadow-lg active:scale-95 transition-transform">CHECK ANSWER</button>
             <button id="next-item-btn" class="w-full py-4 bg-gray-700 text-white font-black text-lg rounded-xl shadow-lg hidden">NEXT ITEM</button>
         </div>
-        <div class="h-10"></div>
+        
+        <div class="h-12"></div>
     </div>
 
     <div id="success-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center hidden z-[100]">
@@ -61,17 +110,17 @@
             const items = [
                 { src: 'Compound 1.png', cat: 'compound' }, { src: 'Compound 2.png', cat: 'compound' }, { src: 'Compound 3.png', cat: 'compound' },
                 { src: 'Exponential 1.png', cat: 'exponential' }, { src: 'Exponential 2.png', cat: 'exponential' }, { src: 'Exponential 3.png', cat: 'exponential' },
-                { src: 'Grow 1.png', cat: 'grow' }, { src: 'Linear 1.png', cat: 'linear' }, { src: 'Linear 2.png', cat: 'linear' },
+                { src: 'Grow 1.png', cat: 'savings' }, { src: 'Linear 1.png', cat: 'linear' }, { src: 'Linear 2.png', cat: 'linear' },
                 { src: 'Linear 3.png', cat: 'linear' }, { src: 'Linear 4.png', cat: 'linear' }, { src: 'Logistic 1.png', cat: 'logistic' },
-                { src: 'Shrink 1.png', cat: 'shrink' }, { src: 'Shrink 2.png', cat: 'shrink' }, { src: 'Shrink 3.png', cat: 'shrink' }, { src: 'Shrink 4.png', cat: 'shrink' }
+                { src: 'Shrink 1.png', cat: 'payout' }, { src: 'Shrink 2.png', cat: 'payout' }, { src: 'Shrink 3.png', cat: 'payout' }, { src: 'Shrink 4.png', cat: 'payout' }
             ];
             const cats = [
                 { val: 'linear', txt: 'Linear', img: 'Linear Formula.png' },
                 { val: 'exponential', txt: 'Exponential', img: 'Exponential Formula.png' },
                 { val: 'logistic', txt: 'Logistic', img: 'Logistic Formula.png' },
                 { val: 'compound', txt: 'Compound Interest', img: 'Compound Formula.png' },
-                { val: 'grow', txt: 'Growth', img: 'Grow Formula.png' },
-                { val: 'shrink', txt: 'Shrinkage', img: 'Shrink Formula.png' }
+                { val: 'savings', txt: 'Savings Annuity', img: 'Grow Formula.png' },
+                { val: 'payout', txt: 'Payout Annuity/Loan', img: 'Shrink Formula.png' }
             ];
 
             let idx = 0, shuffled = [...items].sort(() => Math.random() - 0.5), score = 0, tried = 0, sel = null;
@@ -86,8 +135,7 @@
                 box.innerHTML = '';
                 cats.forEach(c => {
                     const d = document.createElement('div');
-                    d.className = 'p-4 border-b border-gray-100 hover:bg-blue-50 cursor-pointer';
-                    // FIXED: Using local relative paths
+                    d.className = 'p-4 border-b border-gray-100 hover:bg-blue-50 cursor-pointer transition-colors';
                     d.innerHTML = `<p class="font-bold text-xs uppercase mb-1">${c.txt}</p><img src="${encodeURIComponent(c.img)}" class="w-full h-auto">`;
                     d.onclick = () => {
                         document.getElementById('selected-option-text').innerText = c.txt;
@@ -101,7 +149,6 @@
 
             function render(i) {
                 const d = document.getElementById('image-display');
-                // FIXED: Using local relative paths
                 const imgName = shuffled[i].src;
                 d.innerHTML = `<img src="${encodeURIComponent(imgName)}" alt="Financial Graph">`;
                 
@@ -156,8 +203,7 @@
                 }
             }
             document.getElementById('next-item-btn').onclick = next;
-            buildMenu(); 
-            render(0);
+            buildMenu(); render(0);
         });
     </script>
 </body>
