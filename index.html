@@ -2,19 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Financial Model Sorting - Mobile</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        
+        /* Locking the image to the top when scrolling */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background-color: white;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+
         @keyframes correct-animation {
             0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
             70% { box-shadow: 0 0 0 20px rgba(34, 197, 94, 0); }
             100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
         .correct-answer { animation: correct-animation 1s ease-out; border-color: #22c55e; border-width: 4px; }
+        
         @keyframes incorrect-animation {
             0%, 100% { transform: translateX(0); }
             20%, 60% { transform: translateX(-10px); }
@@ -23,32 +35,44 @@
         .incorrect-answer { animation: incorrect-animation 0.4s linear; border-color: #ef4444; border-width: 4px; }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-2">
-    <div id="game-scroll-wrapper" class="w-full max-w-md max-h-[98vh] overflow-y-auto bg-white rounded-2xl shadow-xl border border-gray-200">
-        <div id="game-container" class="p-4 md:p-6">
-            <div class="text-center mb-4">
-                <h1 class="text-2xl font-bold text-gray-800 tracking-tight">Financial Model Sorting</h1>
-                <div class="flex flex-wrap justify-between items-center mt-2 px-2 text-[10px] font-bold text-gray-500 uppercase">
+<body class="flex flex-col min-h-screen">
+    <div id="game-scroll-wrapper" class="w-full max-w-md mx-auto bg-white min-h-screen shadow-xl">
+        
+        <div class="sticky-header p-4">
+            <div class="text-center mb-2">
+                <h1 class="text-xl font-bold text-gray-800">Financial Model Sorting</h1>
+                <div class="flex justify-between items-center mt-1 px-2 text-[10px] font-bold text-gray-500 uppercase">
                     <p id="round-counter">Item 1/16</p>
                     <p id="score-display">Score: 0 / 0</p>
                     <p>Plays: <span id="plays-display">0</span></p>
                 </div>
             </div>
-            <div id="image-display" class="bg-gray-50 rounded-xl p-4 mb-2 min-h-[220px] flex items-center justify-center border-2 border-dashed border-gray-200"></div>
-            <div id="correct-answer-display" class="text-center text-red-600 font-bold mb-4 min-h-[1.5rem] text-sm italic"></div>
-            <div id="controls" class="space-y-3">
+            
+            <div id="image-display" class="bg-gray-50 rounded-xl p-3 min-h-[180px] flex items-center justify-center border-2 border-dashed border-gray-200 overflow-hidden">
+                </div>
+        </div>
+
+        <div id="game-container" class="p-4 space-y-4">
+            <div id="correct-answer-display" class="text-center text-red-600 font-bold min-h-[1.5rem] text-sm italic"></div>
+
+            <div id="controls" class="space-y-4">
                 <div class="relative" id="custom-select-container">
-                    <button id="custom-select-button" type="button" class="w-full p-4 flex items-center justify-between bg-white border-2 border-gray-300 rounded-xl shadow-sm">
+                    <button id="custom-select-button" type="button" class="w-full p-4 flex items-center justify-between bg-white border-2 border-gray-300 rounded-xl shadow-sm active:bg-gray-50">
                         <span id="selected-option-text" class="font-semibold text-gray-700">Select a model...</span>
                         <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
                     </button>
-                    <div id="custom-select-options" class="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-2xl hidden max-h-80 overflow-y-auto"></div>
+                    <div id="custom-select-options" class="w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-lg overflow-hidden hidden">
+                        </div>
                 </div>
-                <button id="check-answer-btn" class="w-full py-4 bg-blue-600 text-white font-black text-lg rounded-xl shadow-lg">CHECK ANSWER</button>
+                
+                <button id="check-answer-btn" class="w-full py-4 bg-blue-600 text-white font-black text-lg rounded-xl shadow-lg active:bg-blue-700">CHECK ANSWER</button>
                 <button id="next-item-btn" class="w-full py-4 bg-gray-700 text-white font-black text-lg rounded-xl shadow-lg hidden">NEXT ITEM</button>
             </div>
+            
+            <div class="h-20"></div>
         </div>
     </div>
+
     <div id="success-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center hidden z-[100]">
         <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-xs w-full mx-4">
             <h3 class="text-3xl font-black text-green-600">🏆 FINISHED!</h3>
@@ -56,6 +80,7 @@
             <button onclick="location.reload()" class="mt-8 w-full py-4 bg-green-500 text-white font-black rounded-2xl">PLAY AGAIN</button>
         </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const items = [
@@ -73,13 +98,17 @@
                 { val: 'grow', txt: 'Growth', img: 'Grow Formula.png' },
                 { val: 'shrink', txt: 'Shrinkage', img: 'Shrink Formula.png' }
             ];
+
             let idx = 0, shuffled = [...items].sort(() => Math.random() - 0.5), score = 0, tried = 0, sel = null;
             let plays = parseInt(localStorage.getItem('sortingGamePlays')) || 0;
             document.getElementById('plays-display').innerText = plays;
+
             const correctSnd = new Tone.PolySynth(Tone.Synth).toDestination();
             const wrongSnd = new Tone.Synth({ oscillator: { type: "square" } }).toDestination();
+
             function buildMenu() {
                 const box = document.getElementById('custom-select-options');
+                box.innerHTML = '';
                 cats.forEach(c => {
                     const d = document.createElement('div');
                     d.className = 'p-4 border-b border-gray-100 hover:bg-blue-50 cursor-pointer';
@@ -88,59 +117,11 @@
                         document.getElementById('selected-option-text').innerText = c.txt;
                         sel = c.val;
                         box.classList.add('hidden');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     };
                     box.appendChild(d);
                 });
             }
+
             function render(i) {
-                const d = document.getElementById('image-display');
-                d.innerHTML = `<img src="${encodeURIComponent(shuffled[i].src)}" class="max-h-[220px] object-contain">`;
-                d.classList.remove('correct-answer', 'incorrect-answer');
-                document.getElementById('correct-answer-display').innerText = '';
-                document.getElementById('round-counter').innerText = `Item ${i + 1}/16`;
-                document.getElementById('selected-option-text').innerText = 'Select a model...';
-                sel = null;
-                document.getElementById('custom-select-button').disabled = false;
-                document.getElementById('check-answer-btn').classList.remove('hidden');
-                document.getElementById('next-item-btn').classList.add('hidden');
-            }
-            document.getElementById('custom-select-button').onclick = (e) => {
-                e.stopPropagation();
-                document.getElementById('custom-select-options').classList.toggle('hidden');
-            };
-            window.onclick = () => document.getElementById('custom-select-options').classList.add('hidden');
-            document.getElementById('check-answer-btn').onclick = () => {
-                if (!sel) return alert("Select a model!");
-                if (Tone.context.state !== 'running') Tone.start();
-                tried++;
-                const isRight = sel === shuffled[idx].cat;
-                document.getElementById('custom-select-button').disabled = true;
-                document.getElementById('check-answer-btn').classList.add('hidden');
-                if (isRight) {
-                    score++;
-                    document.getElementById('image-display').classList.add('correct-answer');
-                    correctSnd.triggerAttackRelease(["C4", "E4", "G4"], "0.5");
-                    setTimeout(next, 1500);
-                } else {
-                    document.getElementById('image-display').classList.add('incorrect-answer');
-                    wrongSnd.triggerAttackRelease("G2", "0.3");
-                    document.getElementById('correct-answer-display').innerText = `Correct: ${cats.find(c => c.val === shuffled[idx].cat).txt}`;
-                    document.getElementById('next-item-btn').classList.remove('hidden');
-                }
-                document.getElementById('score-display').innerText = `Score: ${score} / ${tried}`;
-            };
-            function next() {
-                idx++;
-                if (idx < shuffled.length) render(idx);
-                else {
-                    plays++; localStorage.setItem('sortingGamePlays', plays);
-                    document.getElementById('final-score-message').innerText = `Accuracy: ${Math.round((score/tried)*100)}%`;
-                    document.getElementById('success-modal').classList.remove('hidden');
-                }
-            }
-            document.getElementById('next-item-btn').onclick = next;
-            buildMenu(); render(0);
-        });
-    </script>
-</body>
-</html>
+                const d
